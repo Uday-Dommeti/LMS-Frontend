@@ -11,21 +11,26 @@
   align-items: center;
   justify-content: center;
 }
-.modal > div{
-    height: 100vh;
-}
+
 .modal-img{
     max-width: 90vw;
     height: 100%;
     object-fit: fill;
+    background-color: #fff;
 }
 
 .close {
   position: absolute;
-  top: -30px;
+  top: -35px;
   right: 20px;
   font-size: 6rem;
   color: #000;
   cursor: pointer;
   z-index: 1001;
+}
+
+@media (min-width:1024px) {
+  .modal > div{
+    height: 100vh;
+}
 }
