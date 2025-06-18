@@ -9,10 +9,6 @@ function Modal({ modalSrc, setModalSrc }) {
     setModalSrc(null);
   };
 
-  useEffect(() => {
-    console.log(modalSrc?.src);
-  }, []);
-
   return (
     <div
       className="modal  bg-opacity-25"
