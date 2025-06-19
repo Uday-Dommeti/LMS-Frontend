@@ -15,8 +15,8 @@
 .modal-img{
     max-width: 90vw;
     height: 100%;
-    object-fit: fill;
-    background-color: #fff;
+    object-fit: contain;
+    background-color: #ffffffbd;
 }
 
 .close {

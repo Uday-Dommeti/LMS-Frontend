@@ -89,7 +89,11 @@ function TopicChildDetails({ activeTab, filteredContent }) {
                         </div>
                       );
                     } else if (activeTab === "Assignments") {
-                      return <div className="">{el}</div>;
+                      return (
+                        <div key={i} className="">
+                          {el}
+                        </div>
+                      );
                     } else {
                       if (el?.type !== "p") {
                         return el;

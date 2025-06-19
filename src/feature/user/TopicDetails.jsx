@@ -4,10 +4,8 @@ import {
   useTopicdetailsQuery,
 } from "../../services/technology";
 import { useParams } from "react-router-dom";
-import parse from "html-react-parser";
 import { Helmet } from "react-helmet";
 import "./TopicDetails.css";
-import Modal from "./Modal";
 import TopicChildDetails from "./TopicChildDetails";
 
 function TopicDetails() {
