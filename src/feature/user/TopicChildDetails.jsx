@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import parse from "html-react-parser";
 import Modal from "./Modal";
+import QuizApp from "../quiz/Quiz";
 
 function TopicChildDetails({ activeTab, filteredContent }) {
   const [modalSrc, setModalSrc] = useState({});
@@ -34,30 +35,32 @@ function TopicChildDetails({ activeTab, filteredContent }) {
     },
   };
   return (
-    <div className="card-body p-2">
+    <div className="card-body p-2 h-100">
       {filteredContent.length > 0 ? (
         <div className="content-wrapper">
           {filteredContent.map((content, index) => (
             <div className="content-section mb-3" key={content._id}>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h5 className="mb-0 ">
-                  <span className="badge bg-primary me-2">{index + 1}</span>
-                  {content.shortheading}
-                </h5>
-                {activeTab === "Description" && (
-                  <button
-                    className="btn btn-info d-none d-lg-flex"
-                    onClick={() => {
-                      var temp = parse(content.content).filter(
-                        (el) => el.type === "iframe"
-                      );
-                      openModal(temp[0]?.props?.src, temp[0]?.type);
-                    }}
-                  >
-                    <i className="bi bi-zoom-in"></i> Fullscreen
-                  </button>
-                )}
-              </div>
+              {activeTab !== "Quiz" && (
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <h5 className="mb-0 ">
+                    <span className="badge bg-primary me-2">{index + 1}</span>
+                    {content.shortheading}
+                  </h5>
+                  {activeTab === "Description" && (
+                    <button
+                      className="btn btn-info d-none d-lg-flex"
+                      onClick={() => {
+                        var temp = parse(content.content).filter(
+                          (el) => el.type === "iframe"
+                        );
+                        openModal(temp[0]?.props?.src, temp[0]?.type);
+                      }}
+                    >
+                      <i className="bi bi-zoom-in"></i> Fullscreen
+                    </button>
+                  )}
+                </div>
+              )}
               <div className="content-body bg-white rounded-3 shadow-sm border border-grey">
                 {parse(content.content, options).map((el, i) => {
                   if (el !== "\n" && el?.type !== undefined) {
@@ -94,8 +97,10 @@ function TopicChildDetails({ activeTab, filteredContent }) {
                           {el}
                         </div>
                       );
+                    } else if (activeTab === "Quiz") {
+                      return <QuizApp />;
                     } else {
-                      if (el?.type !== "p") {
+                      if (el?.type !== "p" || el.props.children !== undefined) {
                         return el;
                       }
                     }

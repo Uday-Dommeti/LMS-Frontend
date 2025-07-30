@@ -28,6 +28,9 @@
   cursor: pointer;
   z-index: 1001;
 }
+.card,.cardbody{
+  height: 100% !important;
+}
 
 @media (min-width:1024px) {
   .modal > div{

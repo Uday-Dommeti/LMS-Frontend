@@ -65,14 +65,14 @@ function TopicDetails() {
           {/* Content Section */}
           {uniqueTabs && uniqueTabs.length > 0 ? (
             <div className="card border-0">
-              <div className="card-header bg-white px-0 position-sticky top-0">
-                <ul className="nav nav-tabs card-header-tabs border-bottom-0">
+              <div className="card-header bg-white px-0 position-sticky top-0 border-0">
+                <ul className="nav nav-tabs ">
                   {uniqueTabs.map((tab) => (
                     <li className="nav-item" key={tab}>
                       <button
                         className={`nav-link text-bold ${
                           activeTab === tab
-                            ? "text-primary fw-semibold border border-bottom-0"
+                            ? "text-primary fw-semibold active"
                             : "text-secondary"
                         }`}
                         onClick={() => {
