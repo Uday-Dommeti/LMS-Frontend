@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const technologyApi = createApi({
   reducerPath: "technologyApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://edupoly-appliction-production.up.railway.app/",
+    baseUrl: "http://localhost:3500/",
   }),
   endpoints: (builder) => ({
     getAlltechnologies: builder.query({
@@ -13,6 +13,18 @@ export const technologyApi = createApi({
     }),
     gettechnology: builder.query({
       query: (tid) => `/gettechnology/${tid}`,
+    }),
+    getQuestions:builder.query({
+      query:()=> "/getQuestions"
+    }),
+    addQuestion: builder.mutation({
+      query: (question) => {
+        return {
+          url:"/addQuestion",
+          method:"POST",
+          body: question
+        }
+      }
     }),
     addtechnology: builder.mutation({
       query: (technology) => {
@@ -85,11 +97,11 @@ export const technologyApi = createApi({
       },
     }),
     addcontent: builder.mutation({
-      query: ({ topicInfo, tid, cid, topicId }) => {
+      query: ({ formData, tid, cid, topicId }) => {
         return {
           url: `/addcontent/${tid}/${cid}/${topicId}`,
           method: "PUT",
-          body: topicInfo,
+          body: formData,
         };
       },
     }),
@@ -134,6 +146,10 @@ export const {
   useGettechnologyQuery,
   useLazyGettechnologyQuery,
   //FOR TECHNOLOGY
+
+  useAddQuestionMutation,
+  useGetQuestionsQuery,
+  //FOR QUIZ
 
   useAddtechnologyMutation,
   useUpdatetechnologyMutation,

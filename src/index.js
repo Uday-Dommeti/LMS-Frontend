@@ -6,6 +6,7 @@ import { store } from "./app/store";
 import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
 import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddTechnology from "./feature/admin/AddTechnology.jsx";
 import AdminDashboard from "./feature/admin/AdminDashboard.jsx";
@@ -22,6 +23,7 @@ import AdminTechnology from "./feature/admin/AdminTechnology.jsx";
 import AddTopicc from "./feature/admin/AddTopicc.jsx";
 import EditContent from "./feature/admin/EditContent.jsx";
 import EditTopic from "./feature/admin/EditTopic.jsx";
+import QuestionBank from "./feature/admin/QuestionBank.jsx";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: "/admin/addtechnology",
             element: <AddTechnology></AddTechnology>,
+          },
+          {
+            path:"/admin/questionbank",
+            element: <QuestionBank></QuestionBank>
           },
           {
             path: "/admin/addconcept/:tid",

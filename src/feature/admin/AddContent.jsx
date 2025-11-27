@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { EditorState, convertToRaw } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { useAddcontentMutation, useLazyGettechnologyQuery, useLazyTopicdetailsQuery } from '../../services/technology';
+import { useAddcontentMutation, useLazyTopicdetailsQuery } from '../../services/technology';
 import { useNavigate, useParams } from 'react-router-dom';
+import Modal from './Modal';
 
 function AddContent() {
   var [addcontentFn] = useAddcontentMutation();
@@ -21,16 +22,123 @@ function AddContent() {
     content: '',
   });
 
+  let [topicSelected,setTopicSelected]=useState(false);
+  let [isQuiz,setIsQuiz]= useState(false);
   let editorState = EditorState.createEmpty();
   let [description, setDescription] = useState(editorState);
   let [isError, setError] = useState(null);
+  let [quizQues,setQuizQues] = useState({
+    questionNo:1,
+    question:"",
+    options:[],
+    correctOption:null,
+    questionImage:null
+  })
+  let imageInputRef = useRef()
+  let [modalDisplay,setModalDisplay] = useState(false);
+  let [addQModal,setAddQModal] = useState(false);
+  // let [questionImage,setQuestionImage] = useState(null);
+
+  let [questionEditor,setQuestionEditor] = useState(EditorState.createEmpty());
+  let [optionsEditor,setOptionsEditor] = useState([
+    EditorState.createEmpty(),
+    EditorState.createEmpty(),
+    EditorState.createEmpty(),
+    EditorState.createEmpty(),
+  ])
+
+  let handleQuestionChange = (editorState) =>{
+    setQuestionEditor(editorState);
+    const questionText = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+    setQuizQues((prev)=>{
+      return {...prev,question:questionText};
+    })
+  };
+
+  let handleQuestionImageChange = (e) => {
+    // console.log(e.target.files[0]);
+    let imageFile = e.target.files[0];
+    imageFile.url = URL.createObjectURL(imageFile);
+    // console.log(imageFile.url)
+    // setQuestionImage(e.target.files[0]);
+    setQuizQues({...quizQues,questionImage:imageFile});
+  }
+
+  let handleOptionsChange = (editorState,index) => {
+    setOptionsEditor((prevEditors)=>{
+      const newEditors = [...prevEditors];
+      newEditors[index] = editorState;
+      return newEditors
+    });
+
+
+    const newOptions = [...quizQues.options];
+    // console.log(newOptions,index);
+    newOptions[index] = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+    // console.log(newOptions);
+    setQuizQues({...quizQues,options:newOptions});
+  }
+
+  const handleCorrectOptionSelect = (index) => {
+    setQuizQues((prev) => ({
+      ...prev,
+      correctOption: index,
+    }));
+  };
+  
+
+  // useEffect(()=>{
+  //   console.log("Topic Info:",topicInfo);
+  // },[topicInfo])
+
+  // useEffect(()=>{
+  //   console.log(quizQues);
+  // },[quizQues])
 
   let onChangeValue = (e) => {
     setTopicInfo({
       ...topicInfo,
       [e.target.name]: e.target.value,
     });
+    
   };
+
+  let onSelectValue = (e) => {
+    setTopicInfo({
+      ...topicInfo,
+      [e.target.name]: e.target.value,
+    });
+    if(e.target.name === "type"){
+      setTopicSelected(true);
+    }
+    if(e.target.name === "type" && e.target.value === "Quiz"){
+      setIsQuiz(true);
+    }
+    else{
+      setIsQuiz(false);
+    }
+  }
+
+
+  
+
+  let addQuestion = (e) =>{
+    setTopicInfo({...topicInfo,quizcontent:[...(topicInfo.quizcontent || []),quizQues]});
+    setQuizQues({
+      questionNo:quizQues.questionNo+1,
+      question:"",
+      options:[],
+      correctOption:null,
+      questionImage:null
+    });
+    setQuestionEditor(EditorState.createEmpty());
+    setOptionsEditor([
+      EditorState.createEmpty(),
+      EditorState.createEmpty(),
+      EditorState.createEmpty(),
+      EditorState.createEmpty(),
+    ])
+  }
 
   let onEditorStateChange = (editorState) => {
     setDescription(editorState);
@@ -38,11 +146,21 @@ function AddContent() {
     setTopicInfo((prev) => ({ ...prev, content: htmlContent }));
   };
 
+  
+
   let addcontent = async (event) => {
     try {
       event.preventDefault();
       console.log('Topic Info:', topicInfo);
-      var res = await addcontentFn({ topicInfo, tid, cid, topicId });
+      const formData = new FormData();
+      formData.append('topicInfo',JSON.stringify(topicInfo));
+      topicInfo.quizcontent?.forEach((q,index)=>{
+        formData.append(`questionImage_${index}`,q.questionImage || "");
+      });
+      for(var pair of formData.entries()){
+        console.log(pair[0],pair[1]);
+      }
+      var res = await addcontentFn({ formData, tid, cid, topicId });
       console.log('Response:', res);
       navigate(`/admin/addconcept/${tid}/topicdetails/${cid}/${topicId}`);
       topicdetailsFn({tid,cid}) 
@@ -50,12 +168,24 @@ function AddContent() {
 
 
     } catch (error) {
-      console.log('Error in adding content');
+      console.log('Error in adding content',error); 
     }
   };
+
   const handleCancel = () => {
        navigate(-1); 
      };
+
+  const showAddModal = () => {
+    setModalDisplay(true);
+    let modal = new window.bootstrap.Modal(document.getElementById("addContent"));
+    modal.show();
+    // setAddQModal(false);
+  }
+  
+    
+
+     
 
   return (
     <div className="container mt-4">
@@ -111,7 +241,7 @@ function AddContent() {
                   <select
                     name="type"
                     value={topicInfo.type}
-                    onChange={onChangeValue}
+                    onChange={onSelectValue}
                     className="form-select"
                     required
                   >
@@ -127,7 +257,7 @@ function AddContent() {
                 </div>
 
                 {/* Rich Text Editor */}
-                <div className="mb-3">
+                {topicSelected && !isQuiz && <div className="mb-3">
                   <label htmlFor="content" className="form-label fw-bold">Description</label>
                   <div className="border p-2 rounded bg-light">
                     <Editor
@@ -145,6 +275,106 @@ function AddContent() {
                     value={draftToHtml(convertToRaw(description.getCurrentContent()))}
                   />
                 </div>
+                }
+                {
+                  topicSelected && isQuiz &&
+                  <div>
+                    <button type='button' className='btn btn-primary' data-bs-toggle="modal" data-bs-target="#addQuestion" onClick={()=>{setAddQModal(true)}}>Add Question</button>
+                    
+
+                    <div class="modal fade" id="addQuestion" style={{display: addQModal ? "block" : "none"}} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel">
+                      <div class="modal-dialog modal-lg my-0 modal-dialog-scrollable">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">New Question</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div className="mb-3 border p-2 rounded">
+                              <div className='d-flex justify-content-between m-2 align-items-center'>
+                                <h3>Create Question</h3>
+                                <input 
+                                type="file" 
+                                accept='image/*'
+                                className='d-none border border-1 w-25'
+                                ref={imageInputRef}
+                                onChange={handleQuestionImageChange}
+                                />
+                                <div className='d-flex flex-column'>
+                                  <button type='button' onClick={()=>{imageInputRef.current.click()}} className='btn btn-success'>Add Image</button>
+                                  {quizQues.questionImage && <b>{quizQues.questionImage.name}</b> }
+                                </div>
+                              </div>
+                                <Editor
+                                editorState={questionEditor}
+                                onEditorStateChange={handleQuestionChange}
+                                // toolbarHidden
+                                />
+                                {/* <textarea name="" id=""
+                                readOnly
+                                rows="5"
+                                className='form-control mt-3'
+                                value={quizQues.question}
+                                ></textarea> */}
+                                
+                              <div className='d-flex flex-wrap'>
+                                {
+                                  optionsEditor.map((option,index)=>{
+                                    return <div key={`opt-${index}`} className="mt-3 border p-3 rounded w-50">
+                                      <div className="d-flex align-items-center justify-content-between mb-2">
+                                        <label className="mb-0">
+                                          <strong>Option {String.fromCharCode(65 + index)}</strong>
+                                        </label>
+
+                                        <div className='d-flex align-items-center'>
+                                          <input
+                                          type="radio"
+                                          name="correctOption"
+                                          checked={quizQues.correctOption === index}
+                                          id={index}
+                                          onChange={() => handleCorrectOptionSelect(index)}
+                                          />
+                                          <label htmlFor={index} className='ms-1'> Correct Answer </label>
+                                        </div>
+                                      </div>
+                                      <Editor
+                                      editorState={option}
+                                      onEditorStateChange={(editorState)=>{handleOptionsChange(editorState,index)}}
+                                      toolbarHidden
+                                      />
+                                      {/* <textarea name="" id=""
+                                      readOnly
+                                      className='form-control mt-3'
+                                      rows={2}
+                                      value={quizQues.options[index] || "" }
+                                      ></textarea> */}
+                                    </div>
+                                  })
+                                  
+                                }
+
+                              </div>
+                              <div className='m-2 d-flex justify-content-between'>
+                                <button type='button' className='btn btn-primary' onClick={() => addQuestion()}>Add New Question</button>
+                                <button type='button' className='btn btn-info' onClick={showAddModal}>Preview</button>
+                              </div>
+                              <div className="modal fade" id="addContent" style={{display: modalDisplay ? "block" : "none" }} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel">
+                                <Modal quizContent={topicInfo.quizcontent} setTopicInfo={setTopicInfo} topicInfo={topicInfo}></Modal>
+                              </div>
+                              
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Understood</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+                
+                
 
                 {/* Error Message */}
                 {isError !== null && <div className="alert alert-danger">{isError}</div>}

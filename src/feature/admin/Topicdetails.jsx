@@ -33,10 +33,12 @@ function Topicdetails() {
   // Extract unique content types dynamically
   const uniqueTabs = [...new Set(topicdetails.map((content) => content.type))];
 
+
   // Set the first available tab as active if not already set
   useEffect(() => {
     if (uniqueTabs.length > 0 && !activeTab) {
       setActiveTab(uniqueTabs[0]);
+      console.log(uniqueTabs);
     }
   }, [uniqueTabs, activeTab]);
 
@@ -46,6 +48,8 @@ function Topicdetails() {
   };
 
   const filteredContent = topicdetails.filter((content) => content.type === activeTab);
+
+  // console.log(filteredContent);
 
   return (
     <div className="container mt-4">
