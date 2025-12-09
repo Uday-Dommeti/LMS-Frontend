@@ -17,12 +17,67 @@ export const technologyApi = createApi({
     getQuestions:builder.query({
       query:()=> "/getQuestions"
     }),
+    getQuestionById:builder.query({
+      query: (Id) => `/getQuestionById/${Id}`
+    }),
     addQuestion: builder.mutation({
       query: (question) => {
         return {
           url:"/addQuestion",
           method:"POST",
           body: question
+        }
+      }
+    }),
+    editQuestion:builder.mutation({
+      query:(question) => {
+        const {_id,__v,...rest} = question;
+
+        return {
+          url:`/editQuestionById/${_id}`,
+          method:"PUT",
+          body: rest
+        }
+      }
+    }),
+    deleteQuestion:builder.mutation({
+      query: (Id) => {
+        return {
+          url: `/deleteQuestionById/${Id}`,
+          method:"DELETE"
+        }
+      }
+    }),
+    addQuiz: builder.mutation({
+      query: (quiz) => {
+        return {
+          url: "/addQuiz",
+          method:"POST",
+          body: quiz
+        }
+      }
+    }),
+    getAllQuizzes: builder.query({
+      query: () => "/getAllQuizzes"
+    }),
+    getQuizById: builder.query({
+      query: (Id) => `/getQuizById/${Id}`
+    }),
+    editQuizById: builder.mutation({
+      query: (editedQuiz) => {
+        // console.log("Edited quiz Id",editedQuiz._id);
+        return {
+          url:`/editQuizById/${editedQuiz._id}`,
+          method: "PUT",
+          body: editedQuiz
+        }
+      }
+    }),
+    deleteQuizById: builder.mutation({
+      query: (Id) => {
+        return {
+          url:`/deleteQuizById/${Id}`,
+          method:"DELETE"
         }
       }
     }),
@@ -149,6 +204,20 @@ export const {
 
   useAddQuestionMutation,
   useGetQuestionsQuery,
+  useLazyGetQuestionsQuery,
+  useGetQuestionByIdQuery,
+  useEditQuestionMutation,
+  useLazyGetQuestionByIdQuery,
+  useDeleteQuestionMutation,
+  //FOR QUESTION
+
+  useAddQuizMutation,
+  useGetAllQuizzesQuery,
+  useLazyGetAllQuizzesQuery,
+  useEditQuizByIdMutation,
+  useGetQuizByIdQuery,
+  useLazyGetQuizByIdQuery,
+  useDeleteQuizByIdMutation,
   //FOR QUIZ
 
   useAddtechnologyMutation,

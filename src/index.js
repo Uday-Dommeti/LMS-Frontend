@@ -24,6 +24,8 @@ import AddTopicc from "./feature/admin/AddTopicc.jsx";
 import EditContent from "./feature/admin/EditContent.jsx";
 import EditTopic from "./feature/admin/EditTopic.jsx";
 import QuestionBank from "./feature/admin/QuestionBank.jsx";
+import Quizes from "./feature/admin/Quizes.jsx";
+import CreateQuiz from "./components/CreateQuiz.jsx";
 
 const router = createBrowserRouter([
   {
@@ -35,7 +37,7 @@ const router = createBrowserRouter([
         element: <AdminDashboard></AdminDashboard>,
         children: [
           {
-            path: "/admin",
+            path: "/admin/technology",
             element: <AdminTechnology></AdminTechnology>,
           },
           {
@@ -45,6 +47,18 @@ const router = createBrowserRouter([
           {
             path:"/admin/questionbank",
             element: <QuestionBank></QuestionBank>
+          },
+          {
+            path:"/admin/quizes",
+            element: <Quizes></Quizes>
+          },
+          {
+            path:"/admin/quizes/createquiz",
+            element: <CreateQuiz></CreateQuiz>
+          },
+          {
+            path:"/admin/quizes/editquiz/:Id",
+            element: <CreateQuiz></CreateQuiz>
           },
           {
             path: "/admin/addconcept/:tid",

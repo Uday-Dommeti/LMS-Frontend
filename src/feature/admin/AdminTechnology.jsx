@@ -9,12 +9,11 @@ function AdminTechnology() {
 
     return (
         <div className='container mt-4'>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="text-start">Technologies</h2>
+            <div className="d-flex justify-content-evenly align-items-center mb-4">
+                {/* <h2 className="text-start">Technologies</h2> */}
                 <Link to="/admin/addtechnology" className="btn btn-primary">
                     Add Technology
                 </Link>
-                <Link to="/admin/questionbank" className='btn btn-warning'>Question Bank</Link>
             </div>
             <h2 className='text-center text-success mb-4'>FullStack Training Tutorials</h2>
             <div className='row justify-content-center'>
