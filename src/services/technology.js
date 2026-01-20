@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const technologyApi = createApi({
   reducerPath: "technologyApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3500/",
+    baseUrl: "/",
   }),
   endpoints: (builder) => ({
     getAlltechnologies: builder.query({
