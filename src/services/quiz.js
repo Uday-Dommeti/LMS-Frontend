@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 export const quizApi = createApi({
     reducerPath: "quizApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3500/" }),
+    baseQuery: fetchBaseQuery({ baseUrl: "/" }),
     endpoints: (builder) => ({
         addQuiz: builder.mutation({
             query: (quiz) => {
