@@ -6,6 +6,7 @@ import { store } from "./app/store";
 import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
 import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddTechnology from "./feature/admin/AddTechnology.jsx";
 import AdminDashboard from "./feature/admin/AdminDashboard.jsx";
@@ -22,6 +23,14 @@ import AdminTechnology from "./feature/admin/AdminTechnology.jsx";
 import AddTopicc from "./feature/admin/AddTopicc.jsx";
 import EditContent from "./feature/admin/EditContent.jsx";
 import EditTopic from "./feature/admin/EditTopic.jsx";
+import QuestionBank from "./feature/admin/QuestionBank.jsx";
+import Quizes from "./feature/admin/Quizes.jsx";
+import CreateQuiz from "./components/CreateQuiz.jsx";
+import QuizAttempt from "./feature/user/QuizAttempt.jsx";
+import SignUp from "./feature/authentication/SignUp.jsx";
+import Login from "./feature/authentication/Login.jsx";
+import { ToastContainer } from "react-toastify";
+import QuizResults from "./feature/user/QuizResults.jsx";
 
 const router = createBrowserRouter([
   {
@@ -33,12 +42,28 @@ const router = createBrowserRouter([
         element: <AdminDashboard></AdminDashboard>,
         children: [
           {
-            path: "/admin",
+            path: "/admin/technology",
             element: <AdminTechnology></AdminTechnology>,
           },
           {
             path: "/admin/addtechnology",
             element: <AddTechnology></AddTechnology>,
+          },
+          {
+            path:"/admin/questionbank",
+            element: <QuestionBank></QuestionBank>
+          },
+          {
+            path:"/admin/quizes",
+            element: <Quizes></Quizes>
+          },
+          {
+            path:"/admin/quizes/createquiz",
+            element: <CreateQuiz></CreateQuiz>
+          },
+          {
+            path:"/admin/quizes/editquiz/:Id",
+            element: <CreateQuiz></CreateQuiz>
           },
           {
             path: "/admin/addconcept/:tid",
@@ -96,8 +121,24 @@ const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path:"/quiz/attempt/:Id",
+            element: <QuizAttempt></QuizAttempt>
+          },
+          {
+            path:"quiz/results",
+            element: <QuizResults></QuizResults>
+          }
         ],
       },
+      {
+        path: "/signup",
+        element: <SignUp></SignUp>
+      },
+      {
+        path: "/login",
+        element: <Login></Login>
+      }
     ],
   },
 ]);
@@ -106,5 +147,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
     <RouterProvider router={router} />
+    <ToastContainer></ToastContainer>
   </Provider>
 );

@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { EditorState, convertToRaw } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { useAddcontentMutation, useLazyGettechnologyQuery, useLazyTopicdetailsQuery } from '../../services/technology';
+import { useAddcontentMutation, useLazyTopicdetailsQuery } from '../../services/technology';
 import { useNavigate, useParams } from 'react-router-dom';
 
 function AddContent() {
@@ -21,6 +21,8 @@ function AddContent() {
     content: '',
   });
 
+  let [topicSelected,setTopicSelected]=useState(false);
+  let [isQuiz,setIsQuiz]= useState(false);
   let editorState = EditorState.createEmpty();
   let [description, setDescription] = useState(editorState);
   let [isError, setError] = useState(null);
@@ -30,7 +32,24 @@ function AddContent() {
       ...topicInfo,
       [e.target.name]: e.target.value,
     });
+    
   };
+
+  let onSelectValue = (e) => {
+    setTopicInfo({
+      ...topicInfo,
+      [e.target.name]: e.target.value,
+    });
+    if(e.target.name === "type"){
+      setTopicSelected(true);
+    }
+    if(e.target.name === "type" && e.target.value === "Quiz"){
+      setIsQuiz(true);
+    }
+    else{
+      setIsQuiz(false);
+    }
+  }
 
   let onEditorStateChange = (editorState) => {
     setDescription(editorState);
@@ -42,7 +61,15 @@ function AddContent() {
     try {
       event.preventDefault();
       console.log('Topic Info:', topicInfo);
-      var res = await addcontentFn({ topicInfo, tid, cid, topicId });
+      const formData = new FormData();
+      formData.append('topicInfo',JSON.stringify(topicInfo));
+      topicInfo.quizcontent?.forEach((q,index)=>{
+        formData.append(`questionImage_${index}`,q.questionImage || "");
+      });
+      for(var pair of formData.entries()){
+        console.log(pair[0],pair[1]);
+      }
+      var res = await addcontentFn({ formData, tid, cid, topicId });
       console.log('Response:', res);
       navigate(`/admin/addconcept/${tid}/topicdetails/${cid}/${topicId}`);
       topicdetailsFn({tid,cid}) 
@@ -50,9 +77,10 @@ function AddContent() {
 
 
     } catch (error) {
-      console.log('Error in adding content');
+      console.log('Error in adding content',error); 
     }
   };
+
   const handleCancel = () => {
        navigate(-1); 
      };
@@ -111,7 +139,7 @@ function AddContent() {
                   <select
                     name="type"
                     value={topicInfo.type}
-                    onChange={onChangeValue}
+                    onChange={onSelectValue}
                     className="form-select"
                     required
                   >
@@ -127,7 +155,7 @@ function AddContent() {
                 </div>
 
                 {/* Rich Text Editor */}
-                <div className="mb-3">
+                {topicSelected && !isQuiz && <div className="mb-3">
                   <label htmlFor="content" className="form-label fw-bold">Description</label>
                   <div className="border p-2 rounded bg-light">
                     <Editor
@@ -145,6 +173,18 @@ function AddContent() {
                     value={draftToHtml(convertToRaw(description.getCurrentContent()))}
                   />
                 </div>
+                }
+                {
+                  topicSelected && isQuiz &&
+                  <div>
+                    <button type='button' className='btn btn-primary'>Create Quiz</button>
+                    
+
+                    
+                  </div>
+                }
+                
+                
 
                 {/* Error Message */}
                 {isError !== null && <div className="alert alert-danger">{isError}</div>}

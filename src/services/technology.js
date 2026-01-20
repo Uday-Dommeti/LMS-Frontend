@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const technologyApi = createApi({
   reducerPath: "technologyApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://edupoly-appliction-production.up.railway.app/",
+    baseUrl: "/",
   }),
   endpoints: (builder) => ({
     getAlltechnologies: builder.query({
@@ -14,6 +14,41 @@ export const technologyApi = createApi({
     gettechnology: builder.query({
       query: (tid) => `/gettechnology/${tid}`,
     }),
+    getQuestions:builder.query({
+      query:()=> "/getQuestions"
+    }),
+    getQuestionById:builder.query({
+      query: (Id) => `/getQuestionById/${Id}`
+    }),
+    addQuestion: builder.mutation({
+      query: (question) => {
+        return {
+          url:"/addQuestion",
+          method:"POST",
+          body: question
+        }
+      }
+    }),
+    editQuestion:builder.mutation({
+      query:(question) => {
+        const {_id,__v,...rest} = question;
+
+        return {
+          url:`/editQuestionById/${_id}`,
+          method:"PUT",
+          body: rest
+        }
+      }
+    }),
+    deleteQuestion:builder.mutation({
+      query: (Id) => {
+        return {
+          url: `/deleteQuestionById/${Id}`,
+          method:"DELETE"
+        }
+      }
+    }),
+
     addtechnology: builder.mutation({
       query: (technology) => {
         return {
@@ -85,11 +120,11 @@ export const technologyApi = createApi({
       },
     }),
     addcontent: builder.mutation({
-      query: ({ topicInfo, tid, cid, topicId }) => {
+      query: ({ formData, tid, cid, topicId }) => {
         return {
           url: `/addcontent/${tid}/${cid}/${topicId}`,
           method: "PUT",
-          body: topicInfo,
+          body: formData,
         };
       },
     }),
@@ -134,6 +169,15 @@ export const {
   useGettechnologyQuery,
   useLazyGettechnologyQuery,
   //FOR TECHNOLOGY
+
+  useAddQuestionMutation,
+  useGetQuestionsQuery,
+  useLazyGetQuestionsQuery,
+  useGetQuestionByIdQuery,
+  useEditQuestionMutation,
+  useLazyGetQuestionByIdQuery,
+  useDeleteQuestionMutation,
+  //FOR QUESTION
 
   useAddtechnologyMutation,
   useUpdatetechnologyMutation,
