@@ -39,15 +39,15 @@ function QuestionBank() {
     // }, [isLoading])
 
     return (
-        <div className="d-flex shadow-lg rounded-3 m-2" style={{ border: "1px solid #f8c8c8ff" }}>
-            <div className="m-3 w-100">
-                <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-evenly" style={{height:"80vh"}}>
+            <div className="col-9 my-2 question-list-container">
+                <div className="d-flex justify-content-end m-2">
                     <button data-bs-toggle="modal" data-bs-target="#addQuestion" className="btn btn-primary" onClick={() => { setAddQModal(true) }}>Add New Question</button>
                     {/* <Link>Filter</Link> */}
                 </div>
-                <div className="d-flex flex-wrap list-unstyled m-2">
+                <div className="d-flex flex-wrap list-unstyled justify-content-center question-list-body">
                     {filQuestions?.map((que, index) => {
-                        return <li className="w-50 shadow-sm rounded p-2" type="button" onClick={() => { showPreviewModal(que._id) }} data-bs-target="#previewQuestion">
+                        return <li className="shadow-sm rounded p-2" type="button" onClick={() => { showPreviewModal(que._id) }} data-bs-target="#previewQuestion">
                             <header className="d-flex">
                                 <b>{index + 1})</b>
                                 <span className="d-flex flex-wrap question-pr">{parse(que.question)}</span>

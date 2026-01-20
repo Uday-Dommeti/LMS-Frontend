@@ -48,39 +48,7 @@ export const technologyApi = createApi({
         }
       }
     }),
-    addQuiz: builder.mutation({
-      query: (quiz) => {
-        return {
-          url: "/addQuiz",
-          method:"POST",
-          body: quiz
-        }
-      }
-    }),
-    getAllQuizzes: builder.query({
-      query: () => "/getAllQuizzes"
-    }),
-    getQuizById: builder.query({
-      query: (Id) => `/getQuizById/${Id}`
-    }),
-    editQuizById: builder.mutation({
-      query: (editedQuiz) => {
-        // console.log("Edited quiz Id",editedQuiz._id);
-        return {
-          url:`/editQuizById/${editedQuiz._id}`,
-          method: "PUT",
-          body: editedQuiz
-        }
-      }
-    }),
-    deleteQuizById: builder.mutation({
-      query: (Id) => {
-        return {
-          url:`/deleteQuizById/${Id}`,
-          method:"DELETE"
-        }
-      }
-    }),
+
     addtechnology: builder.mutation({
       query: (technology) => {
         return {
@@ -210,15 +178,6 @@ export const {
   useLazyGetQuestionByIdQuery,
   useDeleteQuestionMutation,
   //FOR QUESTION
-
-  useAddQuizMutation,
-  useGetAllQuizzesQuery,
-  useLazyGetAllQuizzesQuery,
-  useEditQuizByIdMutation,
-  useGetQuizByIdQuery,
-  useLazyGetQuizByIdQuery,
-  useDeleteQuizByIdMutation,
-  //FOR QUIZ
 
   useAddtechnologyMutation,
   useUpdatetechnologyMutation,

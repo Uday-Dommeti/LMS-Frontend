@@ -24,10 +24,11 @@ function QuestionForm({ type, Id }) {
         correctOption: [],
         tags: tags,
         difficulty: "",
-        // questionImage: null
+        questionImage: null
     })
     let imageInputRef = useRef();
     const [isFocused, setIsFocused] = useState(false);
+
 
     let [questionEditor, setQuestionEditor] = useState(EditorState.createEmpty());
     let [optionsEditor, setOptionsEditor] = useState([EditorState.createEmpty()])
@@ -56,7 +57,7 @@ function QuestionForm({ type, Id }) {
     let handleQuestionChange = (editorState) => {
         setQuestionEditor(editorState);
         const questionText = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-        setQuizQues((prev) => {
+        setQuizQues((prev) => {   
             return { ...prev, question: questionText };
         })
     };
@@ -104,8 +105,13 @@ function QuestionForm({ type, Id }) {
     let addQuestion = async (e) => {
         // setTopicInfo({ ...topicInfo, quizcontent: [...(topicInfo.quizcontent || []), quizQues] });
         console.log(quizQues);
-        const res = await addNewQuestionFn(quizQues).unwrap();
-        // console.log(res);
+        const formData = new FormData();
+        formData.append("quizQues",JSON.stringify(quizQues));
+        if(quizQues.questionImage){
+            formData.append("questionImage",quizQues.questionImage || "");
+        };
+        const res = await addNewQuestionFn(formData).unwrap();
+        console.log("Res::",res);
         LazyGetQuesFn();
         setQuizQues({
             category: "",
@@ -116,7 +122,7 @@ function QuestionForm({ type, Id }) {
             correctOption: [],
             tags: tags,
             difficulty: "",
-            // questionImage: null
+            questionImage: null
         });
         setQuestionEditor(EditorState.createEmpty());
         setOptionsEditor([EditorState.createEmpty()])
@@ -181,7 +187,7 @@ function QuestionForm({ type, Id }) {
     }, [Id])
 
     return (
-        <div className="mb-3 border p-2 rounded d-flex flex-column justify-content-center">
+        <div className="mb-3 p-2 d-flex flex-column justify-content-center">
             <div className='d-flex justify-content-between m-2 align-items-center'>
                 <select name="" id="" value={quizQues?.category} onChange={handleCategorySelect} className="form-select w-25">
                     <option value="" disabled>Select Category</option>
@@ -189,6 +195,9 @@ function QuestionForm({ type, Id }) {
                     <option value="CSS">CSS</option>
                     <option value="JavaScript">JavaScript</option>
                     <option value="ReactJS">ReactJS</option>
+                    <option value="NodeJS">NodeJS</option>
+                    <option value="ExpressJS">ExpressJS</option>
+                    <option value="MongoDB">MongoDB</option>
                 </select>
                 <select name="" value={quizQues?.difficulty} id="" onChange={(e) => { setQuizQues({ ...quizQues, difficulty: e.target.value }) }} className="form-select w-25">
                     <option value="" disabled>Select Difficulty</option>
@@ -196,38 +205,43 @@ function QuestionForm({ type, Id }) {
                     <option value="Medium">Medium</option>
                     <option value="Hard">Hard</option>
                 </select>
-                {/* <input
-                type="file"
-                accept='image/*'
-                className='d-none border border-1 w-25'
-                ref={imageInputRef}
-                // onChange={handleQuestionImageChange}
-                />
-                <div className='d-flex flex-column'>
-                <button type='button' onClick={() => { imageInputRef.current.click() }} className='btn btn-success'>Add Image</button>
-                {quizQues.questionImage && <b>{quizQues.questionImage.name}</b>}
-                </div> */}
             </div>
-            <Editor
-                editorState={questionEditor}
-                onEditorStateChange={handleQuestionChange}
-                toolbarHidden={!isFocused}
-                wrapperClassName="question-editor-wrapper"
-                placeholder="Enter Question"
-                onFocus={() => { setIsFocused(true) }}
-                onBlur={() => { setIsFocused(false) }}
-            />
+            <div className="d-flex flex-wrap w-100 border justify-content-between">
+                <Editor
+                    editorState={questionEditor}
+                    onEditorStateChange={handleQuestionChange}
+                    toolbarHidden={!isFocused}
+                    editorClassName="editorClassName"
+                    toolbarClassName="toolbarClassName"
+                    wrapperClassName="question-editor-wrapper"
+                    placeholder="Enter Question"
+                    onFocus={() => { setIsFocused(true) }}
+                    onBlur={() => { setIsFocused(false) }}
+                />
+                <input
+                    type="file"
+                    accept='image/*'
+                    className='d-none border border-1 w-25'
+                    ref={imageInputRef}
+                    onChange={handleQuestionImageChange}
+                />
+                <button type='button' onClick={() => { imageInputRef.current.click() }} className='btn btn-success m-2 h-25'>Add Image</button>
+            </div>
             {/* <textarea name="" id=""
                                         readOnly
                                         rows="5"
                                         className='form-control mt-3'
                                         value={quizQues.question}
                                         ></textarea> */}
+            <div className="d-flex justify-content-center p-2">
+                {quizQues.questionImage && <img src={quizQues?.questionImage?.url} alt="No image added" className="w-50" />}
+            </div>
             <select name="answerType" id="" className="form-select w-25 mt-2" onChange={handleOptionTypeChange}>
                 <option value="Multiple choice">Multiple choice</option>
                 <option value="Multiple select">Multiple select</option>
-                <option value="Text answer">Text answer</option>
+                {/* <option value="Text answer">Text answer</option> */}
             </select>
+
             {["Multiple choice", "Multiple select"].includes(quizQues.optionType) ?
                 (<div className='d-flex flex-wrap'>
                     {
@@ -282,11 +296,11 @@ function QuestionForm({ type, Id }) {
                 </div>)
                 :
                 (<div className="my-2">
-                    <Editor
+                    {/* <Editor
                         editorState={convertHtmlToEditorState(quizQues.correctOption[0])}
                         onEditorStateChange={(editorState) => { handleCorrectOptionSelect(editorState) }}
                         toolbarHidden
-                    ></Editor>
+                    ></Editor> */}
                 </div>)
             }
             <div className='m-2 d-flex justify-content-between align-items-center'>
@@ -297,7 +311,7 @@ function QuestionForm({ type, Id }) {
                     placeHolder="enter tags"
                     classNames={""}
                 ></TagsInput>
-                <button type='button' className='btn btn-primary h-25 m-2' onClick={type == "add" ? addQuestion : editQuestion} data-bs-dismiss="modal">{type == "add" ? "Save Question" : "Save Changes"}</button>
+                <button type='button' className='btn btn-primary w-25' onClick={type == "add" ? addQuestion : editQuestion} data-bs-dismiss="modal">{type == "add" ? "Save Question" : "Save Changes"}</button>
             </div>
         </div>
     )

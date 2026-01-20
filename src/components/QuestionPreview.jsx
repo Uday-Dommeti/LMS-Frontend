@@ -47,6 +47,9 @@ function QuestionPreview({ Id, type }) {
                         <b>Q)</b>
                         <span>{parse(question.question)}</span>
                     </div>
+                    {question?.questionImage && <div className="d-flex justify-content-center">
+                        <img src={`http://localhost:3500${question?.questionImage}`} alt="" className="w-50" />
+                    </div>}
                     <ul className="list-group">
                         {
                             question?.options.map((option, index) => {
@@ -55,7 +58,7 @@ function QuestionPreview({ Id, type }) {
                                         <b>{String.fromCharCode(65 + index)})</b>
                                         <span>{parse(option)}</span>
                                     </div>
-                                    {question.correctOption === option && <i class="bi bi-check-circle fs-5"></i>}
+                                    {question.correctOption.includes(option) && <i class="bi bi-check-circle fs-5"></i>}
                                 </li>
                             })
                         }

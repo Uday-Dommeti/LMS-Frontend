@@ -1,7 +1,16 @@
-import React from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { notifyWarning } from '../../components/Toast';
 
 function AdminDashboard() {
+  const navigate  = useNavigate();
+  useEffect(()=>{
+    if(window.localStorage.getItem("role") !== "Admin"){
+      // alert("Not authorized");
+      notifyWarning("Not authorized");
+      navigate("/");
+    }
+  },[])
   return (
     <div >
          {/* <h1 className='text-center'>Admin Dashboard</h1> */}

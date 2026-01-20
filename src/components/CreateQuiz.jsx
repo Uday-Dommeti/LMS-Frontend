@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { useAddQuizMutation, useEditQuizByIdMutation, useGetQuestionsQuery, useGetQuizByIdQuery, useLazyGetAllQuizzesQuery, useLazyGetQuizByIdQuery } from "../services/technology";
+import { useGetQuestionsQuery } from "../services/technology";
 import parse from "html-react-parser";
 import { TagsInput } from "react-tag-input-component";
 import { useNavigate, useParams } from "react-router-dom";
 import QuizPreview from "./QuizPreview";
+import Modal from "./Modal";
+import QuestionForm from "./QuestionForm";
+import { useAddQuizMutation, useEditQuizByIdMutation, useGetQuizByIdQuery, useLazyGetAllQuizzesQuery, useLazyGetQuizByIdQuery } from "../services/quiz";
 
 function CreateQuiz() {
     const { Id } = useParams();
@@ -21,6 +24,7 @@ function CreateQuiz() {
         quizTags: [],
         quizQuestions: []
     });
+    let [addQModal, setAddQModal] = useState(false);
 
     useEffect(() => {
         // console.log(data?.questions);
@@ -31,7 +35,7 @@ function CreateQuiz() {
         if (!Id) return;  // <-- DO NOT RUN WHEN CREATING
 
         if (quizById?.data) {
-            setNewQuiz(quizById.data.requestedQuiz);
+            setNewQuiz(quizById?.data?.requestedQuiz);
         }
     }, [Id, quizById?.data]);
 
@@ -107,9 +111,9 @@ function CreateQuiz() {
         <div className="d-flex">
             <div className="m-2 w-75 d-flex flex-column align-items-center">
                 <div className="d-flex justify-content-evenly w-100 align-items-center">
-                    <div className="quiz-title-row  d-flex align-items-center justify-content-center">
-                        <h5 className="p-0">Quiz Title: </h5>
-                        <input type="text" id="quizTitle" name="quizTitle" value={newQuiz?.quizTitle} onChange={handleTitleChange} autoComplete="off" />
+                    <div className="float-field mt-0 w-50">
+                        <input type="text" id="quizTitle" className="float-input" placeholder=" " name="quizTitle" value={newQuiz?.quizTitle} onChange={handleTitleChange} autoComplete="off" />
+                        <label className="float-label">Quiz Title</label>
                     </div>
 
                     <TagsInput
@@ -120,7 +124,7 @@ function CreateQuiz() {
                 </div>
 
 
-                <div className="d-flex flex-wrap list-unstyled m-2">
+                <div className="d-flex flex-wrap list-unstyled m-2 overflow-y-auto">
                     {filQuestions?.map((que, index) => {
                         return <label htmlFor={que?._id} className="quiz-question-card" role="button">
                             <input type="checkbox" id={que?._id} checked={newQuiz?.quizQuestions?.includes(que["_id"])} onChange={(e) => { handleCheckBox(e, que) }} />
@@ -128,10 +132,18 @@ function CreateQuiz() {
                         </label>
                     })}
                 </div>
-                <button className="btn btn-primary create-btn" onClick={createQuiz}>{Id ? "Edit Quiz" : "Create Quiz"}</button>
+                <div className="d-flex justify-content-evenly w-100">
+                    <button data-bs-toggle="modal" data-bs-target="#addQuestion" className="btn btn-primary create-btn" onClick={() => { setAddQModal(true) }}>Add New Question</button>
+                    <button className="btn btn-primary create-btn" onClick={createQuiz}>{Id ? "Edit Quiz" : "Create Quiz"}</button>
+                </div>
             </div>
             <div className="w-25">
                 <QuizPreview quizQuestions={newQuiz?.quizQuestions}></QuizPreview>
+            </div>
+            <div class="modal fade" id="addQuestion" style={{ display: addQModal ? "block" : "none" }} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel">
+                <Modal header="New Question">
+                    <QuestionForm type={"add"} />
+                </Modal>
             </div>
         </div>
     )

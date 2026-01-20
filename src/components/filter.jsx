@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 
 function FilterComp({ filQuestions, setFilQuestions }) {
-    const categories = ["HTML", "CSS", "JavaScript", "ReactJS"];
+    const categories = ["HTML", "CSS", "JavaScript", "ReactJS","NodeJS","ExpressJS","MongoDB"];
     const difficultyLevels = ["Easy", "Medium", "Hard"];
     const [unFilteredQues, setUnFilteredQues] = useState([]);
 
@@ -65,7 +65,7 @@ function FilterComp({ filQuestions, setFilQuestions }) {
     }
 
     return (
-        <div className="vh-100 w-25 p-4" style={{ borderLeft: "1px solid coral" }}>
+        <div className="p-4 mx-0 my-2 filter-sidebar col-2">
             <h3>Apply Filters</h3>
             <div>
                 <h5>Category:</h5>
